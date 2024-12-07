@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction - Rice Leaf Disease Identifier</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/server.js"></script>
+</head>
+<body>
+
+    <!-- Navbar Section -->
+    <nav>
+        <ul class="navbar">
+            <li><a href="/" class="nav-link">Home</a></li>
+            <li><a href="/prdt" class="nav-link">Prediction</a></li>
+            <li><a href="/diseases" class="nav-link">Diseases</a></li>
+        </ul>
+    </nav>
+
+    <div class="container flex">
+        <h1 id="heading">Rice Leaf Disease Identifier</h1>
+        
+        <!-- Display error message if no file is selected -->
+        <div id="error-message" style="color: red; display: none; margin-bottom: 20px;">
+            <strong>Error:</strong> No image selected. Please choose an image to predict.
+        </div>
+        
+        <form class="flex" action="/predict" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
+            <div class="file-input-container">
+                <input id="imageInput" type="file" name="file" accept="image/*">
+                <label for="imageInput" class="file-label">Choose Image</label>
+                <!-- Image preview will show here -->
+                <img src="#" id="imagePreview" alt="Image Preview" style="max-width: 300px; display: none; margin-top: 20px;">
+            </div>
+            <div class="btn">
+                <button id="submit" type="submit">Predict</button>
+                <button type="reset" onclick="resetButton()">Reset</button>
+            </div>
+        </form>
+        
+        {% if result %}
+        <h2 id="result">Predicted class: {{ result.class }}</h2>
+        {% endif %}
+    </div>
+
+    <script>
+        // Show image preview when an image is selected
+        document.getElementById('imageInput').addEventListener('change', function(event) {
+            var reader = new FileReader();
+            reader.onload = function() {
+                var img = document.getElementById('imagePreview');
+                img.src = reader.result;
+                img.style.display = 'block';  // Show the image preview
+            };
+            reader.readAsDataURL(this.files[0]);
+        });
+
+        // Reset the input and hide the preview
+        function resetButton() {
+            document.getElementById('imageInput').value = "";
+            document.getElementById('imagePreview').src = "#";
+            document.getElementById('imagePreview').style.display = 'none';  // Hide the preview
+            document.getElementById('error-message').style.display = 'none';  // Hide error message
+        }
+
+        // Validate the form before submitting
+        function validateForm() {
+            var fileInput = document.getElementById('imageInput');
+            var errorMessage = document.getElementById('error-message');
+            if (!fileInput.value) {
+                errorMessage.style.display = 'block';  // Show error message if no file is selected
+                return false;  // Prevent form submission
+            }
+            return true;  // Allow form submission if file is selected
+        }
+    </script>
+
+</body>
+</html>
